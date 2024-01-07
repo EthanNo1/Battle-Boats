@@ -13,7 +13,7 @@ namespace BattleBoats
         {
             
             Title();
-            while (!quit) //loops game until quit answered in Menu()
+            while (!quit) //Loops game until quit answered in Menu()
             {
                 Menu();
             }
@@ -65,19 +65,19 @@ namespace BattleBoats
             Console.ForegroundColor = ConsoleColor.DarkRed;
             string title = File.ReadAllText("Title.txt");
             Console.WriteLine(title); //Font is "Small" from https://patorjk.com/software/taag/#p=display&f=Small&t=BATTLE%20BOATS
-        }
-        static void Play(char[,] userBoard, char[,] computerBoard, char[,] attackBoard, bool goFirst) //loops the main game
+        } //Prints the title
+        static void Play(char[,] userBoard, char[,] computerBoard, char[,] attackBoard, bool goFirst) //Loops the main game
         {
             
             bool finished = false;
             string attack;
             saveGame(userBoard, computerBoard, attackBoard, goFirst);
             Console.Clear();
-            while (!finished)
+            while (!finished) //loops until there is a winner
             {
-                if (CheckWin(attackBoard)||CheckWin(userBoard)) { finished = true; break; }
+                if (CheckWin(attackBoard)||CheckWin(userBoard)) { finished = true; break; }//checks for a win
                 RenderAllBoards(userBoard, attackBoard);
-                if (goFirst)
+                if (goFirst) //if the user goes first then this set of code is run
                 {
                     attackBoard = playerAttack(computerBoard, attackBoard);
                     System.Threading.Thread.Sleep(1000);
@@ -94,7 +94,7 @@ namespace BattleBoats
                     if (CheckWin(userBoard)) { finished = true; break; }
                     RenderAllBoards(userBoard, attackBoard) ;
                 }
-                else
+                else //if the computer goes first then this set of code is run
                 {
                     Console.Clear();
                     Console.WriteLine("Computer attacking...");
@@ -126,7 +126,7 @@ namespace BattleBoats
                 Console.WriteLine("You Lose :(");
             }
         }
-        static bool RockPaperScissors()
+        static bool RockPaperScissors()//Plays rock, paper, scissors to determine who attacks first
         {
             Console.Clear();
             bool win = false;
@@ -145,19 +145,19 @@ namespace BattleBoats
                 string compPlay = choiceList[random.Next(3)];
                 int compIndex = Array.IndexOf(choiceList, compPlay);
                 int userIndex = Array.IndexOf(choiceList, userPlay);
-                if (compPlay == userPlay)
+                if (compPlay == userPlay) //if the user and computer give the same answer
                 {
                     Console.WriteLine($"User: {choiceList[userIndex]}\nComputer: {choiceList[compIndex]}\nDraw.");
                     System.Threading.Thread.Sleep(500);
                     continue;
                 }
-                else if ((compIndex == 1 && userIndex == 2)||(compIndex == 0 && userIndex == 1) || (compIndex==2&&userIndex==0))
+                else if ((compIndex == 1 && userIndex == 2)||(compIndex == 0 && userIndex == 1) || (compIndex==2&&userIndex==0)) //if the user wins
                 {
                     Console.WriteLine($"User: {choiceList[userIndex]}\nComputer: {choiceList[compIndex]}\nYou win!");
                     System.Threading.Thread.Sleep(2000);
                     return true;
                 }
-                else
+                else //if the user loses
                 {
                     Console.WriteLine($"User: {choiceList[userIndex]}\nComputer: {choiceList[compIndex]}\nYou lose!");
                     System.Threading.Thread.Sleep(2000);
@@ -165,11 +165,11 @@ namespace BattleBoats
                 }
             }
             return true;
-        }
-        static void saveGame(char[,] userBoard, char[,] computerBoard, char[,] attackBoard, bool turn)
+        } 
+        static void saveGame(char[,] userBoard, char[,] computerBoard, char[,] attackBoard, bool turn)//Saves the state of the game
         {
             string formattedData = "";
-            for(int i = 0;  i < 24; i++)
+            for(int i = 0;  i < 24; i++) //the two for loops loop through the three boards one after another. As there are three boards with 8 rows each, there are 3*8=24 rows to be looped through
             {
                 for(int j = 0; j < 8; j++)
                 {
@@ -179,12 +179,12 @@ namespace BattleBoats
                 }
                 formattedData += "/";
             }
-            if (turn) formattedData += "1/";
+            if (turn) formattedData += "1/"; //depending on whose turn it is a 1 or a 0 is added to the end of the file
             else formattedData += "0/";
             File.WriteAllText("SavedBoard.txt", formattedData);
 
-        }
-        static void RenderAllBoards(char[,] userBoard, char[,] attackBoard)
+        } 
+        static void RenderAllBoards(char[,] userBoard, char[,] attackBoard)//Prints the user's and computer's board from the user's point of view
         {
             Console.Clear();
             Console.WriteLine("\nYour board:");
@@ -192,8 +192,8 @@ namespace BattleBoats
             Console.WriteLine("\nComputer's board:");
             RenderBoard(attackBoard);
             
-        }
-        static char[,] playerAttack(char[,] computerBoard, char[,] attackBoard)
+        } 
+        static char[,] playerAttack(char[,] computerBoard, char[,] attackBoard)//Edits the computer's gameboard according to the inputted coordinates
         {
             bool attacking = true;
             string attack;
@@ -203,23 +203,23 @@ namespace BattleBoats
                 attack = Console.ReadLine().ToUpper();
                 string[] attackCoords = new string[2];
                 char targetedCoord = ' ';
-                try { attackCoords = GetCoords(attack); targetedCoord = computerBoard[int.Parse(attackCoords[0]), int.Parse(attackCoords[1])]; }
+                try { attackCoords = GetCoords(attack); targetedCoord = computerBoard[int.Parse(attackCoords[0]), int.Parse(attackCoords[1])]; } //the input is translated into usable indexes and "targetedCoord" is set to 'B','C','U','D' or 'P' based on the boat
                 catch { Console.WriteLine("Invalid input."); continue; }
-                char hitCheck = attackBoard[int.Parse(attackCoords[0]), int.Parse(attackCoords[1])];
+                char hitCheck = attackBoard[int.Parse(attackCoords[0]), int.Parse(attackCoords[1])]; //the input is translated into usable indexes and "targetedCoord" is set to 'M','H','S' or '~' depending on what is there
 
-                if (hitCheck == 'H'|| hitCheck == 'S' )
+                if (hitCheck == 'H'|| hitCheck == 'S' ||hitCheck=='M') //if the space has been targeted already, the user is prompted to input again
                 {
                     Console.WriteLine("Already attacked.");
                     continue;
                 }
-                if (targetedCoord == 'B'|| targetedCoord == 'C' || targetedCoord == 'U' || targetedCoord == 'D' || targetedCoord == 'P')
+                if (targetedCoord == 'B'|| targetedCoord == 'C' || targetedCoord == 'U' || targetedCoord == 'D' || targetedCoord == 'P') //if a boat is there, the board is edited appropriately.
                 {
                     Console.BackgroundColor = ConsoleColor.Green; Console.ForegroundColor = ConsoleColor.White;
                     Console.WriteLine("You hit!");
                     attackBoard[int.Parse(attackCoords[0]), int.Parse(attackCoords[1])] = 'H';
                     Console.BackgroundColor = ConsoleColor.Black; Console.ForegroundColor = ConsoleColor.Red;
                 }
-                else if (targetedCoord == '~')
+                else if (targetedCoord == '~')//if a boat is not there, the board is edited appropriately.
                 {
                     Console.BackgroundColor = ConsoleColor.Yellow; Console.ForegroundColor = ConsoleColor.Black;
                     Console.WriteLine("You missed!");
@@ -231,8 +231,8 @@ namespace BattleBoats
             }
             attackBoard = CheckSunk(computerBoard, attackBoard);
             return attackBoard;
-        }
-        static bool CheckWin(char[,] board)
+        } 
+        static bool CheckWin(char[,] board) //Checks if the user or computer have won the game
         {
             int hitCount = 0;
             for (int i = 0; i < 8; i++)
@@ -241,21 +241,21 @@ namespace BattleBoats
                 {
                     if (board[i,j] == 'H'|| board[i, j] == 'S')
                     {
-                        hitCount++;
+                        hitCount++; //counts how many boats have been hit, and if it equals the starting boats then someone has won 
                     }
                 }
             }
             if (hitCount == 9) return true;
             else return false;
         }
-        static char[,] CheckSunk(char[,] computerBoard, char[,] attackBoard)
+        static char[,] CheckSunk(char[,] computerBoard, char[,] attackBoard)//Checks if any of the computer's boats are sunk
         {
             char boatID;
             char checkChar;
             int uCount=0;
             int pCount=0;
             int cCount = 0;
-            for (int k = 0; k < 3; k++)
+            for (int k = 0; k < 3; k++) //itereates through the board and checks if tall of one type of boat are sunk (by checking if the user views a hit where a type of boat is)
             {
                 for (int i = 0; i < 8; i++)
                 {
@@ -285,8 +285,8 @@ namespace BattleBoats
                 }
             }
             return attackBoard;
-        }
-        static char[,] computerAttack( char[,] playerBoard)
+        } 
+        static char[,] computerAttack( char[,] playerBoard)//Generates coordinates for the computer's attack, and edits the user's gameboard accordingly
         {
             Random random = new Random();
             bool uniqueAttack = false;
@@ -317,8 +317,8 @@ namespace BattleBoats
             }
             Console.BackgroundColor = ConsoleColor.Black; Console.ForegroundColor = ConsoleColor.Red;
             return playerBoard;
-        }
-        static char[,] PlaceShips()
+        } 
+        static char[,] PlaceShips()//Prompts the user to place their ships
         {
             
             char[,] board = CreateBoard();
@@ -329,7 +329,7 @@ namespace BattleBoats
             string[] allowedCoords = new string[4];
             string[] eraseCoords = new string[2];
             bool carrierPlaced = false;
-            int persistentCounter = 0;
+            int persistentCounter = 0; //counts the number of ships placed so that the program knows when to move on
             while(persistentCounter<2)//placing destroyers
             {
                 Console.Clear();
@@ -337,22 +337,22 @@ namespace BattleBoats
                 Console.WriteLine($"It's time to place your destroyers!\nYou have {2 - persistentCounter}x Destroyers\nInput the coordinates of a destroyer.");
                 try { placeCoords = GetCoords(Console.ReadLine()); }
                 catch { Console.WriteLine("Invalid input."); continue; }
-                if ((String.IsNullOrEmpty(placeCoords[0]) || String.IsNullOrEmpty(placeCoords[1])))
+                if ((String.IsNullOrEmpty(placeCoords[0]) || String.IsNullOrEmpty(placeCoords[1]))) //checks if the input is valid
                 {
                     Console.WriteLine("Invalid input.");
                     continue; 
                 }
-                else if (board[int.Parse(placeCoords[0]), int.Parse(placeCoords[1])] == 'B')
+                else if (board[int.Parse(placeCoords[0]), int.Parse(placeCoords[1])] == 'B')//checks if the coordinates are new
                 {
                     Console.WriteLine("Space occupied.");
                     continue;
                 }
-                board[int.Parse(placeCoords[0]), int.Parse(placeCoords[1])] = 'B';
+                board[int.Parse(placeCoords[0]), int.Parse(placeCoords[1])] = 'B'; //places the ship
                 persistentCounter++;
                 RenderBoard(board);
                 Console.WriteLine("Is this right? (Y/N)");
                 answer = Console.ReadLine().ToUpper();
-                if (answer != "Y" && answer != "YES")
+                if (answer != "Y" && answer != "YES") //checks if this is what the user wanted
                 {
                     if (answer != "N" || answer != "NO") Console.WriteLine("Invalid input");
                     board[int.Parse(placeCoords[0]), int.Parse(placeCoords[1])] = '~';
@@ -376,15 +376,16 @@ namespace BattleBoats
                     continue;
                 }
                 eraseCoords = placeCoords;
-                board[int.Parse(placeCoords[0]), int.Parse(placeCoords[1])] = 'B';
+                board[int.Parse(placeCoords[0]), int.Parse(placeCoords[1])] = 'B';//places part of the ship
                 RenderBoard(board);
                 otherCoords = OtherCoords(placeCoords);
+                //above code is near identical to that of the destroyer placement
                 Console.WriteLine($"Where would you like second part to go?");
                 for (int j = 0; j < otherCoords.Length; j++)
                 {
                     if (!(String.IsNullOrEmpty(otherCoords[j]) || board[int.Parse(GetCoords(otherCoords[j])[0]), int.Parse(GetCoords(otherCoords[j])[1])] =='B'))
                     {
-                        allowedCoords[j]=(otherCoords[j]);
+                        allowedCoords[j]=(otherCoords[j]); //adds to a list of acceptable coordinates if it meets the criteria
                     }
                 }
                 foreach (string coord in allowedCoords) { if (!(String.IsNullOrEmpty(coord))){ Console.Write(coord + " "); } }
@@ -392,7 +393,7 @@ namespace BattleBoats
                 string testCoords = Console.ReadLine().ToUpper();
                 
                 
-                if (Array.IndexOf(allowedCoords, testCoords) == -1)
+                if (Array.IndexOf(allowedCoords, testCoords) == -1) //checks if the inputted coordinate is acceptable
                 {
                     Console.WriteLine("Please choose an adjacent coordinate.");
                     board[int.Parse(placeCoords[1]), int.Parse(placeCoords[0])] = '~';
@@ -400,12 +401,12 @@ namespace BattleBoats
                 }
                 try { placeCoords = GetCoords(testCoords); }
                 catch { Console.WriteLine("Invalid input."); continue; }
-                board[int.Parse(placeCoords[0]), int.Parse(placeCoords[1])] = 'B';
+                board[int.Parse(placeCoords[0]), int.Parse(placeCoords[1])] = 'B'; //places part of the ship
                 persistentCounter++;
                 RenderBoard(board);
                 Console.WriteLine("Is this right? (Y/N)");
                 answer = Console.ReadLine().ToUpper();
-                if (answer != "Y" && answer != "YES")
+                if (answer != "Y" && answer != "YES")//checks if this is what the user wanted
                 {
                     if (answer != "N" || answer != "NO") Console.WriteLine("Invalid input");
                     board[int.Parse(eraseCoords[1]), int.Parse(eraseCoords[0])] = '~';
@@ -462,7 +463,8 @@ namespace BattleBoats
                 board[int.Parse(placeCoords[0]), int.Parse(placeCoords[1])] = 'B';
                 string[] secondPart = placeCoords;
                 RenderBoard(board);
-                
+                //above code is near identical to submarine placing
+
                 Console.WriteLine($"Where would you like third part to go?");
                 string[] thirdPart1 = new string[2];
                 string[] thirdPart2 = new string[2];
@@ -537,9 +539,12 @@ namespace BattleBoats
                 
             }
             return board;
-        }
-        static char[,] PlaceComputerShips()
+        } 
+        static char[,] PlaceComputerShips()//Generates locations for the computer's ships
         {
+            //Each ship has a unique character (excluding destroyers) so that they can be distinguished from eachother when the program checks if they are sunk
+
+
             char[,] board = CreateBoard();
             Random random = new Random();
             
@@ -596,8 +601,8 @@ namespace BattleBoats
             }
 
             return board;
-        }
-        static void RenderBoard(char[,] gameboard)
+        } 
+        static void RenderBoard(char[,] gameboard) //Prints the inputted board - spaced and in colour
         {
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine(" A B C D E F G H");
@@ -626,7 +631,7 @@ namespace BattleBoats
             }
             Console.ForegroundColor = ConsoleColor.Red;
         }
-        static char[,] CreateBoard()
+        static char[,] CreateBoard()//Creates an empty gameboard
         {
 
             char[,] board = new char[8, 8];
@@ -636,8 +641,8 @@ namespace BattleBoats
                     board[i, j] = '~';
             }
             return board;
-        }
-        static string[] GetCoords(string attack)
+        } 
+        static string[] GetCoords(string attack)//Converts inputted coordinates (e.g. "B6") to an array to be used as the indexes of a gameboard array
         {
             string[] coordOutput = new string[2];
             string[] coords = { "A", "B", "C", "D", "E", "F", "G", "H" };
@@ -656,8 +661,8 @@ namespace BattleBoats
                 coordOutput[1] = "";
             }
             return coordOutput;
-        }
-        static string[] OtherCoords(string[] coordInput)
+        } 
+        static string[] OtherCoords(string[] coordInput)//Finds adjacent coordinates
         {
             string[] coordOutput = new string[4];
             string[] coords = { "A", "B", "C", "D", "E", "F", "G", "H" };
@@ -667,16 +672,15 @@ namespace BattleBoats
             if (int.Parse(coordInput[0]) < 7) coordOutput[1] = (coords[Convert.ToInt32(coordInput[0]) + 1] + (int.Parse(coordInput[1]) + 1));
             if (int.Parse(coordInput[1]) > 0) coordOutput[2] = (coords[Convert.ToInt32(coordInput[0])] + (int.Parse(coordInput[1])));
             if (int.Parse(coordInput[1]) < 7) coordOutput[3] = (coords[Convert.ToInt32(coordInput[0])] + (int.Parse(coordInput[1]) + 2));
-            //foreach (var coord in coordOutput) Console.WriteLine(coord);
             return coordOutput;
-        }
-        static string ReverseCoords(string[] coordInput)
+        } 
+        static string ReverseCoords(string[] coordInput)//Converts the numbers used as indexes into coordinates (e.g. "B6")
         {
             string attack = "";
             string[] coords = { "A", "B", "C", "D", "E", "F", "G", "H" };
             attack += coords[int.Parse(coordInput[0])];
             attack += int.Parse(coordInput[1])+1;
             return attack;
-        }
+        } 
     }
 }

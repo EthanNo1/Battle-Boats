@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Globalization;
 using static System.Net.Mime.MediaTypeNames;
 
@@ -11,6 +11,7 @@ namespace BattleBoats
 
         static void Main(string[] args)
         {
+            
             Title();
             while (!quit) //loops game until quit answered in Menu()
             {
@@ -328,21 +329,26 @@ namespace BattleBoats
             string[] allowedCoords = new string[4];
             string[] eraseCoords = new string[2];
             bool carrierPlaced = false;
-            
-            
-            for (int i = 0; i < 2; i++)//placing destroyers
+            int persistentCounter = 0;
+            while(persistentCounter<2)//placing destroyers
             {
                 Console.Clear();
                 RenderBoard(board);
-                Console.WriteLine($"It's time to place your destroyers!\nYou have {2 - i}x Destroyers\nInput the coordinates of a destroyer.");
+                Console.WriteLine($"It's time to place your destroyers!\nYou have {2 - persistentCounter}x Destroyers\nInput the coordinates of a destroyer.");
                 try { placeCoords = GetCoords(Console.ReadLine()); }
-                catch { Console.WriteLine("Invalid input."); i--; }
-                if (board[int.Parse(placeCoords[0]), int.Parse(placeCoords[1])] == 'B')
+                catch { Console.WriteLine("Invalid input."); continue; }
+                if ((String.IsNullOrEmpty(placeCoords[0]) || String.IsNullOrEmpty(placeCoords[1])))
                 {
-                    Console.WriteLine("Space already occupied.");
-                    i--; continue;
+                    Console.WriteLine("Invalid input.");
+                    continue; 
+                }
+                else if (board[int.Parse(placeCoords[0]), int.Parse(placeCoords[1])] == 'B')
+                {
+                    Console.WriteLine("Space occupied.");
+                    continue;
                 }
                 board[int.Parse(placeCoords[0]), int.Parse(placeCoords[1])] = 'B';
+                persistentCounter++;
                 RenderBoard(board);
                 Console.WriteLine("Is this right? (Y/N)");
                 answer = Console.ReadLine().ToUpper();
@@ -350,24 +356,24 @@ namespace BattleBoats
                 {
                     if (answer != "N" || answer != "NO") Console.WriteLine("Invalid input");
                     board[int.Parse(placeCoords[0]), int.Parse(placeCoords[1])] = '~';
-                    i--;
+                    persistentCounter--;
                     continue;
                 }
             }
-            for (int i = 0; i < 2; i++)//placing submarines
+            persistentCounter = 0;
+            while (persistentCounter < 2)//placing submarines
             {
                 Console.Clear();
                 RenderBoard(board);
                 allowedCoords = new string[4];
-                Console.WriteLine($"It's time to place your submarines!\nYou have {2 - i}x Submarines\nInput the coordinate of a part of a submarine.");
+                Console.WriteLine($"It's time to place your submarines!\nYou have {2 - persistentCounter}x Submarines\nInput the coordinate of a part of a submarine.");
                 try { placeCoords = GetCoords(Console.ReadLine()); if (board[int.Parse(placeCoords[0]), int.Parse(placeCoords[1])] == 'B') { } }
-                catch { Console.WriteLine("Invalid input."); i--; }
+                catch { Console.WriteLine("Invalid input."); continue; }
                 string[] firstCoords = placeCoords;
                 if (board[int.Parse(placeCoords[0]), int.Parse(placeCoords[1])] == 'B')
                 {
                     Console.WriteLine("Space already occupied.");
-                    
-                    i--; continue;
+                    continue;
                 }
                 eraseCoords = placeCoords;
                 board[int.Parse(placeCoords[0]), int.Parse(placeCoords[1])] = 'B';
@@ -389,13 +395,13 @@ namespace BattleBoats
                 if (Array.IndexOf(allowedCoords, testCoords) == -1)
                 {
                     Console.WriteLine("Please choose an adjacent coordinate.");
-                    i--;
                     board[int.Parse(placeCoords[1]), int.Parse(placeCoords[0])] = '~';
                     continue;
                 }
                 try { placeCoords = GetCoords(testCoords); }
-                catch { Console.WriteLine("Invalid input."); i--; }
+                catch { Console.WriteLine("Invalid input."); continue; }
                 board[int.Parse(placeCoords[0]), int.Parse(placeCoords[1])] = 'B';
+                persistentCounter++;
                 RenderBoard(board);
                 Console.WriteLine("Is this right? (Y/N)");
                 answer = Console.ReadLine().ToUpper();
@@ -404,7 +410,7 @@ namespace BattleBoats
                     if (answer != "N" || answer != "NO") Console.WriteLine("Invalid input");
                     board[int.Parse(eraseCoords[1]), int.Parse(eraseCoords[0])] = '~';
                     board[int.Parse(placeCoords[0]), int.Parse(placeCoords[1])] = '~';
-                    i--;
+                    persistentCounter--;
                     continue;
                 }
             }
@@ -418,9 +424,14 @@ namespace BattleBoats
                 Console.WriteLine($"It's time to place your Carrier!\nYou have 1x Carriers\nInput the coordinate of a part of a carrier.");
                 try { placeCoords = GetCoords(Console.ReadLine()); if (board[int.Parse(placeCoords[0]), int.Parse(placeCoords[1])] == 'B') { } }
                 catch { Console.WriteLine("Invalid input."); }
-                if (board[int.Parse(placeCoords[0]), int.Parse(placeCoords[1])] == 'B')
+                if ((String.IsNullOrEmpty(placeCoords[0]) || String.IsNullOrEmpty(placeCoords[1])))
                 {
-                    Console.WriteLine("Space already occupied.");
+                    Console.WriteLine("Invalid input.");
+                    continue;
+                }
+                else if (board[int.Parse(placeCoords[0]), int.Parse(placeCoords[1])] == 'B')
+                {
+                    Console.WriteLine("Space occupied.");
                     continue;
                 }
                 string[] firstPart = placeCoords;
@@ -464,7 +475,7 @@ namespace BattleBoats
                     thirdPart2[0] = firstPart[0];
                     if (int.Parse(firstPart[1]) > int.Parse(secondPart[1]))
                     {
-                        thirdPart1[1] = Convert.ToString(int.Parse(secondPart[1])-1);
+                        thirdPart1[1] = Convert.ToString(int.Parse(secondPart[1]) - 1);
                         thirdPart2[1] = Convert.ToString(int.Parse(firstPart[1]) + 1);
                     }
                     else if (int.Parse(firstPart[1]) < int.Parse(secondPart[1]))
@@ -479,19 +490,18 @@ namespace BattleBoats
                     thirdPart2[1] = firstPart[1];
                     if (int.Parse(firstPart[0]) > int.Parse(secondPart[0]))
                     {
-                        
-                        thirdPart1[0] = Convert.ToString(int.Parse(secondPart[0]) - 1);
+
+                        if (int.Parse(secondPart[0]) != 0) thirdPart1[0] = Convert.ToString(int.Parse(secondPart[0]) - 1);
                         thirdPart2[0] = Convert.ToString(int.Parse(firstPart[0]) + 1);
                     }
                     else if (int.Parse(firstPart[0]) < int.Parse(secondPart[0]))
                     {
                         thirdPart1[0] = Convert.ToString(int.Parse(secondPart[0]) + 1);
-                        thirdPart2[0] = Convert.ToString(int.Parse(firstPart[0]) - 1);
+                        if (int.Parse(firstPart[0]) != 0) thirdPart2[0] = Convert.ToString(int.Parse(firstPart[0]) - 1);
                     }
                 }
-                
-                if (board[int.Parse(thirdPart1[0]), int.Parse(thirdPart1[1])] != 'B')allowedCoords[0] = ReverseCoords(thirdPart1);
-                if (board[int.Parse(thirdPart2[0]), int.Parse(thirdPart2[1])] != 'B')allowedCoords[1] = ReverseCoords(thirdPart2);
+                if (!(String.IsNullOrEmpty(thirdPart1[0]))&& board[int.Parse(thirdPart1[0]), int.Parse(thirdPart1[1])] != 'B')allowedCoords[0] = ReverseCoords(thirdPart1);
+                if (!(String.IsNullOrEmpty(thirdPart2[0])) && board[int.Parse(thirdPart2[0]), int.Parse(thirdPart2[1])] != 'B')allowedCoords[1] = ReverseCoords(thirdPart2);
                 foreach (string coord in allowedCoords) { if (!(String.IsNullOrEmpty(coord))) { Console.Write(coord + " "); } }
 
                 testCoords = Console.ReadLine().ToUpper();
@@ -639,6 +649,11 @@ namespace BattleBoats
                     coordOutput[1] = Convert.ToString(i);
                     coordOutput[0] = Convert.ToString(int.Parse(Convert.ToString(attack[1])) - 1);
                 }
+            }
+            if (int.Parse(coordOutput[0]) > 7 || int.Parse(coordOutput[1]) > 7)
+            {
+                coordOutput[0] = "";
+                coordOutput[1] = "";
             }
             return coordOutput;
         }

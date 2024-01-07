@@ -1,0 +1,6 @@
+Battle Boats is a game where you set up boats in an 8x8 grid and take turns against a computer guessing their ships coordinates.
+Whoever guesses all enemy boat locations first wins.
+You are given five boats of varying sizes:
+  - 2x Destroyers B
+  - 2x Submarines BB
+  - 1x Carrier BBB

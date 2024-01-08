@@ -1,6 +1,12 @@
-Battle Boats is a game where you set up boats in an 8x8 grid and take turns against a computer guessing their ships coordinates.
-Whoever guesses all enemy boat locations first wins.
-You are given five boats of varying sizes:
+
+-----------------------------------------------------------------------------------------------------------------------------------------------
+You and a computer are given five boats of varying sizes, which you must place:
   - 2x Destroyers B
   - 2x Submarines BB
   - 1x Carrier BBB
+
+You play "Rock, Paper, Scissors" against the computer, with the winner going first.
+You must then try and guess the coordinates of the computer's ships, before they guess the coordinates of yours.
+If you hit all of the parts of a ship, that ship "sinks". This information can tell you when to try adjacent tiles and when to try elsewhere.
+A "hit" is shown by a 'H' on the grid, a miss with 'M', and a sink with 'S'.
+-----------------------------------------------------------------------------------------------------------------------------------------------
